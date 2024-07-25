@@ -1,29 +1,32 @@
 {
-  "name": "demo",
-  "$schema": "node_modules/nx/schemas/project-schema.json",
+  "name": "store",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "./src",
+  "sourceRoot": "store/src",
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
+      "executor": "@nx/angular:webpack-browser",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/demo/browser",
-        "index": "./src/index.html",
-        "main": "./src/main.ts",
+        "outputPath": "dist/store/browser",
+        "index": "store/src/index.html",
+        "main": "store/src/main.ts",
         "polyfills": ["zone.js"],
-        "tsConfig": "tsconfig.app.json",
+        "tsConfig": "store/tsconfig.app.json",
         "inlineStyleLanguage": "less",
         "assets": [
           {
             "glob": "**/*",
-            "input": "public"
+            "input": "store/public"
           }
         ],
-        "styles": ["./src/styles.less"],
-        "scripts": []
+        "styles": ["store/src/styles.less"],
+        "scripts": [],
+        "customWebpackConfig": {
+          "path": "store/webpack.config.ts"
+        }
       },
       "configurations": {
         "production": {
@@ -39,7 +42,10 @@
               "maximumError": "4kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "customWebpackConfig": {
+            "path": "store/webpack.prod.config.ts"
+          }
         },
         "development": {
           "buildOptimizer": false,
@@ -53,13 +59,17 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@nx/angular:module-federation-dev-server",
+      "options": {
+        "port": 4200,
+        "publicHost": "http://localhost:4200"
+      },
       "configurations": {
         "production": {
-          "buildTarget": "demo:build:production"
+          "buildTarget": "store:build:production"
         },
         "development": {
-          "buildTarget": "demo:build:development"
+          "buildTarget": "store:build:development"
         }
       },
       "defaultConfiguration": "development"
@@ -67,30 +77,30 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "demo:build"
+        "buildTarget": "store:build"
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["./src"]
-      }
+      "executor": "@nx/eslint:lint"
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectName}"],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "jest.config.app.ts"
+        "jestConfig": "store/jest.config.ts"
       }
     },
     "server": {
       "dependsOn": ["build"],
-      "executor": "@angular-devkit/build-angular:server",
+      "executor": "@nx/angular:webpack-server",
       "options": {
-        "outputPath": "dist/demo/server",
-        "main": "server.ts",
-        "tsConfig": "tsconfig.server.json",
-        "inlineStyleLanguage": "less"
+        "outputPath": "dist/store/server",
+        "main": "store/server.ts",
+        "tsConfig": "store/tsconfig.server.json",
+        "inlineStyleLanguage": "less",
+        "customWebpackConfig": {
+          "path": "store/webpack.server.config.ts"
+        }
       },
       "configurations": {
         "production": {
@@ -100,22 +110,21 @@
           "buildOptimizer": false,
           "optimization": false,
           "sourceMap": true,
-          "extractLicenses": false,
-          "vendorChunk": true
+          "extractLicenses": false
         }
       },
       "defaultConfiguration": "production"
     },
     "serve-ssr": {
-      "executor": "@angular-devkit/build-angular:ssr-dev-server",
+      "executor": "@nx/angular:module-federation-dev-ssr",
       "configurations": {
         "development": {
-          "browserTarget": "demo:build:development",
-          "serverTarget": "demo:server:development"
+          "browserTarget": "store:build:development",
+          "serverTarget": "store:server:development"
         },
         "production": {
-          "browserTarget": "demo:build:production",
-          "serverTarget": "demo:server:production"
+          "browserTarget": "store:build:production",
+          "serverTarget": "store:server:production"
         }
       },
       "defaultConfiguration": "development"
@@ -127,12 +136,12 @@
       },
       "configurations": {
         "development": {
-          "browserTarget": "demo:build:development",
-          "serverTarget": "demo:server:development"
+          "browserTarget": "store:build:development",
+          "serverTarget": "store:server:development"
         },
         "production": {
-          "browserTarget": "demo:build:production",
-          "serverTarget": "demo:server:production"
+          "browserTarget": "store:build:production",
+          "serverTarget": "store:server:production"
         }
       },
       "defaultConfiguration": "production"
